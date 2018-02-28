@@ -26798,7 +26798,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _templateObject = _taggedTemplateLiteral(["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  .pusher{\n    width:10px;\n    height:20000px;\n  }\n  h1{\n    color:#94C83E;\n    font-size: 22px;\n  }\n  .content{\n    position:relative;\n    z-index: 9;\n\n  }\n"], ["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  .pusher{\n    width:10px;\n    height:20000px;\n  }\n  h1{\n    color:#94C83E;\n    font-size: 22px;\n  }\n  .content{\n    position:relative;\n    z-index: 9;\n\n  }\n"]),
-    _templateObject2 = _taggedTemplateLiteral(["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #94C83E;\n    }\n  }\n"], ["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #94C83E;\n    }\n  }\n"]);
+    _templateObject2 = _taggedTemplateLiteral(["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #94C83E;\n      border-radius: 50%;\n    }\n  }\n"], ["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #94C83E;\n      border-radius: 50%;\n    }\n  }\n"]);
 
 var _react = __webpack_require__(1);
 
@@ -26842,11 +26842,16 @@ var rnd = {
 var lastScrollPosition = 0;
 var scrollRatio = { min: 5, max: 12
   //scale is the same for every element, so use only min value
-};var scaleRatio = { min: 0.4, max: 0.2 };
+};var scaleRatio = { min: 1, max: 9 };
 var isScrolling = false;
+//vertical
 var verticalSpeedRatio = 0.4;
 var verticalSpeedMax = 6;
 var verticalSpeedBrakingRatio = 0.15;
+// horizontal
+var horizontalSpeedRatio = 0.05;
+var horizontalSpeedMax = 1;
+var horizontalSpeedBrakingRatio = 0.02;
 var scrollTimer = null;
 var scrollUp = false;
 var content = {
@@ -26884,6 +26889,7 @@ var Index = function (_Component) {
       var _this2 = this;
 
       var list = [];
+      var neededElementsList = [];
       var browserWidth = window.innerWidth;
       var browserHeight = window.innerHeight;
       var xElementsCount = Math.round(browserWidth / 26);
@@ -26905,18 +26911,25 @@ var Index = function (_Component) {
           break;
         }
         var opacity = this.getRandomNumber(1, 9);
+        var xCenter = Math.round(window.innerWidth / 2);
+        var yCenter = Math.round(window.innerHeight / 2);
         list.push({
-          x: nextElementXMargin + overallWidth,
-          y: nextElementYMargin + overallHeight,
-          width: calculatedWidth,
-          height: calculatedWidth,
+          x: xCenter,
+          y: yCenter,
+          width: 1,
+          height: 1,
+          angle: this.getRandomNumber(-180, 180),
           opacity: opacity,
           scrollRatio: this.getRandomNumber(scrollRatio.min, scrollRatio.max),
-          scaleRatio: this.getRandomDouble(scaleRatio.min, scaleRatio.max),
+          scaleRatio: this.getRandomDoubleFromDigit(scaleRatio.min, scaleRatio.max, 100),
           scaleDown: false,
           rotateRatio: 0.0,
           rotate: 0,
-          verticalSpeed: 0
+          verticalSpeed: 0,
+          horizontalSpeed: 0,
+          distance: 0,
+          distanceRatio: this.getRandomDoubleFromDigit(1, 9, 10)
+
         });
         nextElementXMargin = this.getRandomNumber(rnd.xMargin.min, rnd.xMargin.max);
         nextElementYMargin = this.getRandomNumber(rnd.yMargin.min, rnd.yMargin.max);
@@ -26934,6 +26947,11 @@ var Index = function (_Component) {
     key: "getRandomNumber",
     value: function getRandomNumber(min, max) {
       return Math.round(Math.random() * (max - min) + min);
+    }
+  }, {
+    key: "getRandomDoubleFromDigit",
+    value: function getRandomDoubleFromDigit(min, max, decimalPlaces) {
+      return Math.round(Math.random() * (max - min) + min) / decimalPlaces;
     }
   }, {
     key: "getRandomDouble",
@@ -26965,64 +26983,88 @@ var Index = function (_Component) {
       var elements = this.state.backgroundFloatingElements;
       var list = [];
       elements.map(function (el, i) {
-        var scaleDown = void 0,
-            w = void 0;
-        w = el.width;
-        scaleDown = el.scaleDown;
-        if (el.width >= rnd.width.max && !el.scaleDown) {
-          scaleDown = true;
-        }
-        if (el.width <= rnd.width.min && el.scaleDown) {
-          scaleDown = false;
-        }
-        if (scaleDown) {
-          w -= el.scaleRatio;
-        } else {
-          w += el.scaleRatio;
-        }
-        var verticalSpeed = el.verticalSpeed;
+        var w = el.width;
+        var h = el.height;
+        var x = el.x;
         var y = el.y;
-        if (isScrolling) {
-          if (verticalSpeed <= verticalSpeedMax) {
-            verticalSpeed += verticalSpeedRatio;
-          }
-          if (scrollUp) {
-            y += verticalSpeed;
-          } else {
-            y -= verticalSpeed;
-          }
+        var scaleDown = void 0;
+        var verticalSpeed = void 0;
+        var horizontalSpeed = void 0;
+        var distance = el.distance;
+        var angle = el.angle;
+        var distanceRatio = el.distanceRatio;
+        var scaleRatio = el.scaleRatio;
+        x = Math.round(Math.cos(el.angle * Math.PI / 180) * el.distance + Math.round(window.innerWidth / 2));
+        y = Math.round(Math.sin(el.angle * Math.PI / 180) * el.distance + Math.round(window.innerHeight / 2));
+        distanceRatio += 0.1;
+        distance += el.distanceRatio;
+        w += scaleRatio;
+        if (i === 0) console.log(w, x, y);
+        if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
+          distance = 0;
+          angle = _this3.getRandomNumber(-180, 180);
+          scaleRatio = _this3.getRandomDoubleFromDigit(1, 9, 100);
+          distanceRatio = _this3.getRandomDoubleFromDigit(7, 9, 100);
+          w = 1;
+          h = 1;
         }
-        if (!isScrolling && verticalSpeed > 0) {
-          if (!scrollUp) {
-            verticalSpeed -= verticalSpeedBrakingRatio;
-            y -= verticalSpeed;
-          } else {
-            verticalSpeed -= verticalSpeedBrakingRatio;
-            y += verticalSpeed;
+        // verticalSpeed
+        /*  let scaleDown, w
+          w = el.width
+          let verticalSpeed = el.verticalSpeed
+          let y = el.y
+          if(isScrolling){
+            if(verticalSpeed <= verticalSpeedMax){
+                verticalSpeed += verticalSpeedRatio
+            }
+            if(scrollUp){
+              y += (verticalSpeed)
+            }else{
+              y -= (verticalSpeed)
+            }
           }
-        }
-        if (scrollUp) {
-          if (y >= window.innerHeight + 10) {
-            y = -10;
+          if(!isScrolling && verticalSpeed > 0){
+            if(!scrollUp){
+              verticalSpeed -= verticalSpeedBrakingRatio
+              y -= verticalSpeed
+            }else{
+              verticalSpeed -= verticalSpeedBrakingRatio
+              y += verticalSpeed
+            }
           }
-        } else {
-          if (y < -10) {
-            y = window.innerHeight + 10;
+          if(scrollUp){
+            if(y >= window.innerHeight + 10){
+              y = -10
+            }
           }
-        }
-        if (verticalSpeed < 0) verticalSpeed = 0;
+          else{
+            if(y < -10){
+              y = window.innerHeight + 10
+            }
+          }
+          if(verticalSpeed < 0)
+            verticalSpeed = 0
+          // horizontal speed
+          let horizontalSpeed = el.horizontalSpeed
+          let x = el.x
+          const halfScreenPerimeter = Math.round(window.innerWidth / 2)
+          */
         list.push({
           width: w,
           height: w,
-          x: el.x,
+          x: x,
           y: y,
           opacity: el.opacity,
           scrollRatio: el.scrollRatio,
-          scaleRatio: el.scaleRatio,
+          scaleRatio: scaleRatio,
           scaleDown: scaleDown,
           rotateRatio: el.rotateRatio,
           rotate: el.rotate + el.rotateRatio,
-          verticalSpeed: verticalSpeed
+          verticalSpeed: verticalSpeed,
+          horizontalSpeed: horizontalSpeed,
+          distance: distance,
+          angle: angle,
+          distanceRatio: distanceRatio
         });
       });
       // content units
@@ -28875,7 +28917,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(["\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }   \n"], ["\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }   \n"]);
+var _templateObject = _taggedTemplateLiteral(["\n  margin:8000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"], ["\n  margin:8000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"]);
 
 var _react = __webpack_require__(1);
 
@@ -28942,25 +28984,19 @@ var WelcomeUnit = function (_Component) {
       }
       this.setState(_extends({}, this.state, { rotate: mainRotate }));
     }
+    /*
+    <div className="welcomeImage" style={{
+      transform:"matrix("+ this.state.rotate +",0,0, "+ this.state.rotate +",0,0)"
+    }}>
+      <img src="https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556"></img>
+    </div>
+    <p className="description">Bochenek to chuj!</p>
+    */
+
   }, {
     key: "render",
     value: function render() {
-      return _react2.default.createElement(
-        Wrapper,
-        null,
-        _react2.default.createElement(
-          "div",
-          { className: "welcomeImage", style: {
-              transform: "matrix(" + this.state.rotate + ",0,0, " + this.state.rotate + ",0,0)"
-            } },
-          _react2.default.createElement("img", { src: "https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556" })
-        ),
-        _react2.default.createElement(
-          "p",
-          { className: "description" },
-          "Bochenek to chuj!"
-        )
-      );
+      return _react2.default.createElement(Wrapper, null);
     }
   }]);
 

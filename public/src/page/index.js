@@ -40,6 +40,7 @@ const Overlay = styled.div`
       width:10px;
       height:10px;
       background-color: #94C83E;
+      border-radius: 50%;
     }
   }
 `
@@ -52,11 +53,16 @@ const rnd = {
 let lastScrollPosition = 0
 const scrollRatio = {min: 5, max: 12}
 //scale is the same for every element, so use only min value
-const scaleRatio = {min: 0.4, max: 0.2}
+const scaleRatio = {min: 1, max: 9}
 let isScrolling = false
+//vertical
 const verticalSpeedRatio = 0.4
 const verticalSpeedMax = 6
 const verticalSpeedBrakingRatio = 0.15
+// horizontal
+const horizontalSpeedRatio = 0.05
+const horizontalSpeedMax = 1
+const horizontalSpeedBrakingRatio = 0.02
 let scrollTimer = null
 let scrollUp = false
 let content = {
@@ -82,6 +88,7 @@ class Index extends Component {
   }
   componentWillMount(){
     let list = []
+    let neededElementsList = []
     const browserWidth = window.innerWidth
     const browserHeight = window.innerHeight
     const xElementsCount = Math.round(browserWidth / 26)
@@ -103,18 +110,25 @@ class Index extends Component {
         break
       }
       const opacity = this.getRandomNumber(1,9)
+      const xCenter = Math.round(window.innerWidth / 2)
+      const yCenter = Math.round(window.innerHeight / 2)
       list.push({
-        x:nextElementXMargin + overallWidth,
-        y:nextElementYMargin + overallHeight,
-        width:calculatedWidth,
-        height: calculatedWidth,
+        x:xCenter,
+        y:yCenter,
+        width:1,
+        height: 1,
+        angle: this.getRandomNumber(-180,180),
         opacity: opacity,
         scrollRatio: this.getRandomNumber(scrollRatio.min, scrollRatio.max),
-        scaleRatio: this.getRandomDouble(scaleRatio.min, scaleRatio.max),
+        scaleRatio: this.getRandomDoubleFromDigit(scaleRatio.min, scaleRatio.max, 100),
         scaleDown: false,
         rotateRatio: 0.0,
         rotate: 0,
-        verticalSpeed: 0
+        verticalSpeed: 0,
+        horizontalSpeed: 0,
+        distance: 0,
+        distanceRatio: this.getRandomDoubleFromDigit(1,9, 10),
+
       })
       nextElementXMargin = this.getRandomNumber(rnd.xMargin.min, rnd.xMargin.max)
       nextElementYMargin = this.getRandomNumber(rnd.yMargin.min, rnd.yMargin.max)
@@ -126,6 +140,9 @@ class Index extends Component {
   }
   getRandomNumber(min, max){
      return Math.round(Math.random() * (max - min) + min)
+  }
+  getRandomDoubleFromDigit(min, max, decimalPlaces){
+     return Math.round(Math.random() * (max - min) + min) / decimalPlaces
   }
   getRandomDouble(min, max){
      return Math.round(min * 10) / 10
@@ -152,20 +169,35 @@ class Index extends Component {
     let elements = this.state.backgroundFloatingElements
     let list = []
     elements.map((el, i) => {
-      let scaleDown, w
+      let w = el.width
+      let h = el.height
+      let x = el.x
+      let y = el.y
+      let scaleDown
+      let verticalSpeed
+      let horizontalSpeed
+      let distance = el.distance
+      let angle = el.angle
+      let distanceRatio = el.distanceRatio
+      let scaleRatio = el.scaleRatio
+      x = Math.round(Math.cos(el.angle * Math.PI/180) * el.distance + Math.round(window.innerWidth / 2))
+      y = Math.round(Math.sin(el.angle * Math.PI/180) * el.distance + Math.round(window.innerHeight / 2))
+      distanceRatio += 0.1
+      distance += el.distanceRatio
+      w += scaleRatio
+      if(i === 0)
+        console.log(w,x,y)
+      if((x < 0 || x > window.innerWidth) || (y < 0 || y > window.innerHeight)){
+        distance = 0
+        angle = this.getRandomNumber(-180,180)
+        scaleRatio = this.getRandomDoubleFromDigit(1, 9, 100)
+        distanceRatio = this.getRandomDoubleFromDigit(7,9, 100)
+        w = 1
+        h = 1
+      }
+      // verticalSpeed
+    /*  let scaleDown, w
       w = el.width
-      scaleDown = el.scaleDown
-      if(el.width >= rnd.width.max && !el.scaleDown){
-        scaleDown = true
-      }
-      if(el.width <= rnd.width.min && el.scaleDown){
-        scaleDown = false
-      }
-      if(scaleDown){
-        w -= el.scaleRatio
-      }else{
-        w += el.scaleRatio
-      }
       let verticalSpeed = el.verticalSpeed
       let y = el.y
       if(isScrolling){
@@ -199,18 +231,27 @@ class Index extends Component {
       }
       if(verticalSpeed < 0)
         verticalSpeed = 0
+      // horizontal speed
+      let horizontalSpeed = el.horizontalSpeed
+      let x = el.x
+      const halfScreenPerimeter = Math.round(window.innerWidth / 2)
+      */
       list.push({
         width: w,
         height:w,
-        x: el.x,
+        x: x,
         y: y,
         opacity: el.opacity,
         scrollRatio: el.scrollRatio,
-        scaleRatio: el.scaleRatio,
+        scaleRatio: scaleRatio,
         scaleDown: scaleDown,
         rotateRatio: el.rotateRatio,
         rotate: el.rotate + el.rotateRatio,
-        verticalSpeed: verticalSpeed
+        verticalSpeed: verticalSpeed,
+        horizontalSpeed: horizontalSpeed,
+        distance: distance,
+        angle: angle,
+        distanceRatio: distanceRatio
       })
     })
     // content units

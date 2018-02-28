@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
+  margin:8000px 0;
   .welcomeImage{
     margin: 0 auto;
     display: table;
@@ -29,7 +30,7 @@ const Wrapper = styled.div`
     display: table;
     margin-top:1000px;
     margin-bottom: 3000px;
-  }   
+  }
 `
 let text = "Lorem ipsum dolor sissa leo semper turpis, non blandit libero augue et tellus. Quisque egestas arcu arcu, et tristique tellus laoreet vitae. Nam dictum libero leo, non "
 let list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
@@ -64,15 +65,17 @@ class WelcomeUnit extends Component {
     }
     this.setState({...this.state, rotate: mainRotate})
   }
+  /*
+  <div className="welcomeImage" style={{
+    transform:"matrix("+ this.state.rotate +",0,0, "+ this.state.rotate +",0,0)"
+  }}>
+    <img src="https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556"></img>
+  </div>
+  <p className="description">Bochenek to chuj!</p>
+  */
   render() {
       return (
         <Wrapper>
-            <div className="welcomeImage" style={{
-              transform:"matrix("+ this.state.rotate +",0,0, "+ this.state.rotate +",0,0)"
-            }}>
-              <img src="https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556"></img>
-            </div>
-            <p className="description">Bochenek to chuj!</p>
 
         </Wrapper>
      )
