@@ -24,8 +24,8 @@ router(app)
 // database
 mongoose.Promise = Q.Promise;
 mongoose.connect(config.mongoConnect)
-// application
-app.get("*", (req, res) => { 
+// application 
+app.get("*", (req, res) => {
   res.sendFile(path.resolve('server', 'index.html'))
 })
 app.listen(port, () => console.log('Server is working on ' + port))
