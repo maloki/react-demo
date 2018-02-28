@@ -26999,7 +26999,6 @@ var Index = function (_Component) {
         distanceRatio += 0.1;
         distance += el.distanceRatio;
         w += scaleRatio;
-        if (i === 0) console.log(w, x, y);
         if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
           distance = 0;
           angle = _this3.getRandomNumber(-180, 180);

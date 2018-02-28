@@ -185,8 +185,6 @@ class Index extends Component {
       distanceRatio += 0.1
       distance += el.distanceRatio
       w += scaleRatio
-      if(i === 0)
-        console.log(w,x,y)
       if((x < 0 || x > window.innerWidth) || (y < 0 || y > window.innerHeight)){
         distance = 0
         angle = this.getRandomNumber(-180,180)
@@ -236,7 +234,7 @@ class Index extends Component {
       let x = el.x
       const halfScreenPerimeter = Math.round(window.innerWidth / 2)
       */
-      list.push({
+      list.push({ 
         width: w,
         height:w,
         x: x,
