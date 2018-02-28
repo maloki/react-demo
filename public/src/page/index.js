@@ -56,9 +56,9 @@ const scrollRatio = {min: 5, max: 12}
 const scaleRatio = {min: 1, max: 9}
 let isScrolling = false
 //vertical
-const verticalSpeedRatio = 0.4
-const verticalSpeedMax = 6
-const verticalSpeedBrakingRatio = 0.15
+const speedAcceleration = 0.3
+const speedMax = 9
+const speedBrakingRatio = 0.2
 // horizontal
 const horizontalSpeedRatio = 0.05
 const horizontalSpeedMax = 1
@@ -124,11 +124,9 @@ class Index extends Component {
         scaleDown: false,
         rotateRatio: 0.0,
         rotate: 0,
-        verticalSpeed: 0,
-        horizontalSpeed: 0,
+        speed: 0,
         distance: 0,
         distanceRatio: this.getRandomDoubleFromDigit(1,9, 10),
-
       })
       nextElementXMargin = this.getRandomNumber(rnd.xMargin.min, rnd.xMargin.max)
       nextElementYMargin = this.getRandomNumber(rnd.yMargin.min, rnd.yMargin.max)
@@ -180,19 +178,48 @@ class Index extends Component {
       let angle = el.angle
       let distanceRatio = el.distanceRatio
       let scaleRatio = el.scaleRatio
-      x = Math.round(Math.cos(el.angle * Math.PI/180) * el.distance + Math.round(window.innerWidth / 2))
-      y = Math.round(Math.sin(el.angle * Math.PI/180) * el.distance + Math.round(window.innerHeight / 2))
-      distanceRatio += 0.1
-      distance += el.distanceRatio
-      w += scaleRatio
+      let speed = el.speed
+
+      if(isScrolling){
+        if(speed <= speedMax){
+          speed += speedAcceleration
+        }
+        if(!scrollUp){
+          distance += speed
+        }else{
+          distance -= speed
+        }
+      }
+      if(!isScrolling && speed > 0){
+        if(speed > 1)
+          speed -= speedBrakingRatio
+        if(!scrollUp){
+          distance += speed
+        }else{
+          distance -= speed
+        }
+      }
+      if(speed < 1)
+        speed = 1
+      if(isScrolling || speed > 0){
+        if(!scrollUp){
+          w = distance / 100
+        }else{
+          w = distance / 100
+        }
+      }
+      x = Math.round(Math.cos(el.angle * Math.PI/180) * distance + Math.round(window.innerWidth / 2))
+      y = Math.round(Math.sin(el.angle * Math.PI/180) * distance + Math.round(window.innerHeight / 2))
       if((x < 0 || x > window.innerWidth) || (y < 0 || y > window.innerHeight)){
         distance = 0
         angle = this.getRandomNumber(-180,180)
-        scaleRatio = this.getRandomDoubleFromDigit(1, 9, 100)
+        scaleRatio = this.getRandomDoubleFromDigit(1, 9, 10)
         distanceRatio = this.getRandomDoubleFromDigit(7,9, 100)
         w = 1
         h = 1
       }
+      if(i === 0)
+        console.log(speed, distance, isScrolling)
       // verticalSpeed
     /*  let scaleDown, w
       w = el.width
@@ -234,7 +261,7 @@ class Index extends Component {
       let x = el.x
       const halfScreenPerimeter = Math.round(window.innerWidth / 2)
       */
-      list.push({ 
+      list.push({
         width: w,
         height:w,
         x: x,
@@ -245,8 +272,7 @@ class Index extends Component {
         scaleDown: scaleDown,
         rotateRatio: el.rotateRatio,
         rotate: el.rotate + el.rotateRatio,
-        verticalSpeed: verticalSpeed,
-        horizontalSpeed: horizontalSpeed,
+        speed: speed,
         distance: distance,
         angle: angle,
         distanceRatio: distanceRatio

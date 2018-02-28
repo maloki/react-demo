@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
-  margin:8000px 0;
+  margin:80000px 0;
   .welcomeImage{
     margin: 0 auto;
     display: table;

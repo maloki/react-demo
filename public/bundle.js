@@ -26845,9 +26845,9 @@ var scrollRatio = { min: 5, max: 12
 };var scaleRatio = { min: 1, max: 9 };
 var isScrolling = false;
 //vertical
-var verticalSpeedRatio = 0.4;
-var verticalSpeedMax = 6;
-var verticalSpeedBrakingRatio = 0.15;
+var speedAcceleration = 0.3;
+var speedMax = 9;
+var speedBrakingRatio = 0.2;
 // horizontal
 var horizontalSpeedRatio = 0.05;
 var horizontalSpeedMax = 1;
@@ -26925,11 +26925,9 @@ var Index = function (_Component) {
           scaleDown: false,
           rotateRatio: 0.0,
           rotate: 0,
-          verticalSpeed: 0,
-          horizontalSpeed: 0,
+          speed: 0,
           distance: 0,
           distanceRatio: this.getRandomDoubleFromDigit(1, 9, 10)
-
         });
         nextElementXMargin = this.getRandomNumber(rnd.xMargin.min, rnd.xMargin.max);
         nextElementYMargin = this.getRandomNumber(rnd.yMargin.min, rnd.yMargin.max);
@@ -26994,19 +26992,45 @@ var Index = function (_Component) {
         var angle = el.angle;
         var distanceRatio = el.distanceRatio;
         var scaleRatio = el.scaleRatio;
-        x = Math.round(Math.cos(el.angle * Math.PI / 180) * el.distance + Math.round(window.innerWidth / 2));
-        y = Math.round(Math.sin(el.angle * Math.PI / 180) * el.distance + Math.round(window.innerHeight / 2));
-        distanceRatio += 0.1;
-        distance += el.distanceRatio;
-        w += scaleRatio;
+        var speed = el.speed;
+
+        if (isScrolling) {
+          if (speed <= speedMax) {
+            speed += speedAcceleration;
+          }
+          if (!scrollUp) {
+            distance += speed;
+          } else {
+            distance -= speed;
+          }
+        }
+        if (!isScrolling && speed > 0) {
+          if (speed > 1) speed -= speedBrakingRatio;
+          if (!scrollUp) {
+            distance += speed;
+          } else {
+            distance -= speed;
+          }
+        }
+        if (speed < 1) speed = 1;
+        if (isScrolling || speed > 0) {
+          if (!scrollUp) {
+            w = distance / 100;
+          } else {
+            w = distance / 100;
+          }
+        }
+        x = Math.round(Math.cos(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
+        y = Math.round(Math.sin(el.angle * Math.PI / 180) * distance + Math.round(window.innerHeight / 2));
         if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
           distance = 0;
           angle = _this3.getRandomNumber(-180, 180);
-          scaleRatio = _this3.getRandomDoubleFromDigit(1, 9, 100);
+          scaleRatio = _this3.getRandomDoubleFromDigit(1, 9, 10);
           distanceRatio = _this3.getRandomDoubleFromDigit(7, 9, 100);
           w = 1;
           h = 1;
         }
+        if (i === 0) console.log(speed, distance, isScrolling);
         // verticalSpeed
         /*  let scaleDown, w
           w = el.width
@@ -27059,8 +27083,7 @@ var Index = function (_Component) {
           scaleDown: scaleDown,
           rotateRatio: el.rotateRatio,
           rotate: el.rotate + el.rotateRatio,
-          verticalSpeed: verticalSpeed,
-          horizontalSpeed: horizontalSpeed,
+          speed: speed,
           distance: distance,
           angle: angle,
           distanceRatio: distanceRatio
@@ -28916,7 +28939,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(["\n  margin:8000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"], ["\n  margin:8000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"]);
+var _templateObject = _taggedTemplateLiteral(["\n  margin:80000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"], ["\n  margin:80000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"]);
 
 var _react = __webpack_require__(1);
 
