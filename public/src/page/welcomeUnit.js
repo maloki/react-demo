@@ -27,9 +27,9 @@ const Wrapper = styled.div`
     text-align: center;
     margin:0 auto;
     display: table;
-    margin-top:400px;
+    margin-top:1000px;
     margin-bottom: 3000px;
-  }
+  }   
 `
 let text = "Lorem ipsum dolor sissa leo semper turpis, non blandit libero augue et tellus. Quisque egestas arcu arcu, et tristique tellus laoreet vitae. Nam dictum libero leo, non "
 let list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
@@ -72,11 +72,11 @@ class WelcomeUnit extends Component {
             }}>
               <img src="https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556"></img>
             </div>
-            <p className="description">Xbox is a video gaming brand created and owned by Microsoft. It represents a series of video game consoles developed by Microsoft, with three consoles released in the sixth, seventh and eighth generations respectively</p>
+            <p className="description">Bochenek to chuj!</p>
 
         </Wrapper>
      )
    }
-} 
+}
 
 export default WelcomeUnit
