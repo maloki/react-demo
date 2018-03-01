@@ -26927,7 +26927,10 @@ var Index = function (_Component) {
           rotate: 0,
           speed: 0,
           distance: 0,
-          distanceRatio: this.getRandomDoubleFromDigit(1, 9, 10)
+          distanceRatio: this.getRandomDoubleFromDigit(1, 9, 10),
+          distanceSpeed: 0,
+          startX: 0,
+          startY: 0
         });
         nextElementXMargin = this.getRandomNumber(rnd.xMargin.min, rnd.xMargin.max);
         nextElementYMargin = this.getRandomNumber(rnd.yMargin.min, rnd.yMargin.max);
@@ -26993,7 +26996,9 @@ var Index = function (_Component) {
         var distanceRatio = el.distanceRatio;
         var scaleRatio = el.scaleRatio;
         var speed = el.speed;
-
+        var distanceSpeed = el.distanceSpeed;
+        var startX = el.startX;
+        var startY = el.startY;
         if (isScrolling) {
           if (speed <= speedMax) {
             speed += speedAcceleration;
@@ -27020,17 +27025,36 @@ var Index = function (_Component) {
             w = distance / 100;
           }
         }
-        x = Math.round(Math.cos(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
-        y = Math.round(Math.sin(el.angle * Math.PI / 180) * distance + Math.round(window.innerHeight / 2));
-        if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
+        if (scrollUp) {
+          x = Math.round(Math.cos(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
+          y = Math.round(Math.sin(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
+        } else {
+          x = Math.round(Math.cos(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
+          y = Math.round(Math.sin(el.angle * Math.PI / 180) * distance + Math.round(window.innerHeight / 2));
+        }
+        if ((x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) && !scrollUp) {
           distance = 0;
           angle = _this3.getRandomNumber(-180, 180);
           scaleRatio = _this3.getRandomDoubleFromDigit(1, 9, 10);
           distanceRatio = _this3.getRandomDoubleFromDigit(7, 9, 100);
-          w = 1;
-          h = 1;
+          w = 0;
+          h = 0;
         }
-        if (i === 0) console.log(speed, distance, isScrolling);
+        if (w <= 0 && h <= 0 && scrollUp) {
+          var random = _this3.getRandomNumber(0, 1);
+          if (random === 0) {
+            x = _this3.getRandomNumber(0, 1) === 0 ? 0 : window.innerWidth;
+            y = _this3.getRandomNumber(0, window.innerHeight);
+          } else {
+            x = _this3.getRandomNumber(0, window.innerWidth);
+            y = _this3.getRandomNumber(0, 1) === 0 ? 0 : window.innerHeight;
+          }
+          startX = x;
+          startY = y;
+          distance = Math.hypot(x - window.innerWidth, y - window.innerHeight);
+          angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0 / Math.PI;
+          console.log(x, y);
+        }
         // verticalSpeed
         /*  let scaleDown, w
           w = el.width
@@ -27086,7 +27110,10 @@ var Index = function (_Component) {
           speed: speed,
           distance: distance,
           angle: angle,
-          distanceRatio: distanceRatio
+          distanceRatio: distanceRatio,
+          distanceSpeed: distanceSpeed,
+          startX: startX,
+          startY: startY
         });
       });
       // content units
