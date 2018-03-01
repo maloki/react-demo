@@ -27065,9 +27065,7 @@ var Index = function (_Component) {
           distance = Math.sqrt(a * a + b * b);
           //angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0/Math.PI
           angle = _this3.getRandomNumber(-180, 180);
-          //  console.log(x,y)
         }
-        if (i === 0) console.log(distance, angle);
         // verticalSpeed
         /*  let scaleDown, w
           w = el.width
