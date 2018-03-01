@@ -76,6 +76,8 @@ let scrollPosition = 0
 let currentGlobalScroll = 0
 let isJustScrolled = false
 let isScrollActive = false
+let isStartProcedure = false
+const startProcedureBrakingRatio = 3
 
 class Index extends Component {
   state = {
@@ -124,7 +126,7 @@ class Index extends Component {
         scaleDown: false,
         rotateRatio: 0.0,
         rotate: 0,
-        speed: 0,
+        speed: 100,
         distance: this.getRandomNumber(0,100),
         distanceRatio: this.getRandomDoubleFromDigit(1,9, 10),
         distanceSpeed: 0,
@@ -185,6 +187,12 @@ class Index extends Component {
       let distanceSpeed = el.distanceSpeed
       let startX = el.startX
       let startY = el.startY
+      if(speed === 100)
+        isStartProcedure = true
+      if(speed < 10)
+        isStartProcedure = false
+      if(isStartProcedure)
+        speed -= startProcedureBrakingRatio
       if(isScrolling){
         if(speed <= speedMax){
           speed += speedAcceleration
@@ -233,13 +241,21 @@ class Index extends Component {
           x = this.getRandomNumber(0, window.innerWidth)
           y = this.getRandomNumber(0, 1) === 0 ? 0 : window.innerHeight
         }
+      /*  if(x === window.innerWidth && y <= Math.round(window.innerHeight / 2))
+          angle = this.getRandomNumber(-90, 0)
+        if(x === window.innerWidth && y >= Math.round(window.innerHeight / 2))
+          angle = this.getRandomNumber(0, 90)
+        if(y === window.innerHeight && x <= Math.round(window.innerWidth / 2))
+          angle = this.getRandomNumber(90, -180)
+        if(y === window.innerWidth && x >= Math.round(window.innerWidth / 2))
+          angle = this.getRandomNumber(-180, 0)*/
         startX = x
         startY = y
         let a = (window.innerWidth / 2) - x
         let b = (window.innerHeight / 2) - y
         distance = Math.sqrt(a*a + b*b)
-        angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0/Math.PI
-        angle = this.getRandomNumber(-180,180)
+        //angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0/Math.PI
+        angle = this.getRandomNumber(-180, 180)
       //  console.log(x,y)
       }
       if(i === 0)

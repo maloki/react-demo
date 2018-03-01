@@ -26865,6 +26865,8 @@ var scrollPosition = 0;
 var currentGlobalScroll = 0;
 var isJustScrolled = false;
 var isScrollActive = false;
+var isStartProcedure = false;
+var startProcedureBrakingRatio = 3;
 
 var Index = function (_Component) {
   _inherits(Index, _Component);
@@ -26925,7 +26927,7 @@ var Index = function (_Component) {
           scaleDown: false,
           rotateRatio: 0.0,
           rotate: 0,
-          speed: 0,
+          speed: 100,
           distance: this.getRandomNumber(0, 100),
           distanceRatio: this.getRandomDoubleFromDigit(1, 9, 10),
           distanceSpeed: 0,
@@ -26999,6 +27001,9 @@ var Index = function (_Component) {
         var distanceSpeed = el.distanceSpeed;
         var startX = el.startX;
         var startY = el.startY;
+        if (speed === 100) isStartProcedure = true;
+        if (speed < 10) isStartProcedure = false;
+        if (isStartProcedure) speed -= startProcedureBrakingRatio;
         if (isScrolling) {
           if (speed <= speedMax) {
             speed += speedAcceleration;
@@ -27045,12 +27050,20 @@ var Index = function (_Component) {
             x = _this3.getRandomNumber(0, window.innerWidth);
             y = _this3.getRandomNumber(0, 1) === 0 ? 0 : window.innerHeight;
           }
+          /*  if(x === window.innerWidth && y <= Math.round(window.innerHeight / 2))
+              angle = this.getRandomNumber(-90, 0)
+            if(x === window.innerWidth && y >= Math.round(window.innerHeight / 2))
+              angle = this.getRandomNumber(0, 90)
+            if(y === window.innerHeight && x <= Math.round(window.innerWidth / 2))
+              angle = this.getRandomNumber(90, -180)
+            if(y === window.innerWidth && x >= Math.round(window.innerWidth / 2))
+              angle = this.getRandomNumber(-180, 0)*/
           startX = x;
           startY = y;
           var a = window.innerWidth / 2 - x;
           var b = window.innerHeight / 2 - y;
           distance = Math.sqrt(a * a + b * b);
-          angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0 / Math.PI;
+          //angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0/Math.PI
           angle = _this3.getRandomNumber(-180, 180);
           //  console.log(x,y)
         }
@@ -28966,7 +28979,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(["\n  margin:80000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"], ["\n  margin:80000px 0;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    margin-top:200px;\n    background-color: rgba(0,0,0,.8);\n    position:relative;\n    padding:40px;\n    z-index: 11;\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"]);
+var _templateObject = _taggedTemplateLiteral(["\n  margin-bottom:80000px;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    background-color: rgba(0,0,0,1);\n    position:fixed;\n    padding:40px;\n    z-index: 11;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"], ["\n  margin-bottom:80000px;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    background-color: rgba(0,0,0,1);\n    position:fixed;\n    padding:40px;\n    z-index: 11;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"]);
 
 var _react = __webpack_require__(1);
 
@@ -29033,19 +29046,18 @@ var WelcomeUnit = function (_Component) {
       }
       this.setState(_extends({}, this.state, { rotate: mainRotate }));
     }
-    /*
-    <div className="welcomeImage" style={{
-      transform:"matrix("+ this.state.rotate +",0,0, "+ this.state.rotate +",0,0)"
-    }}>
-      <img src="https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556"></img>
-    </div>
-    <p className="description">Bochenek to chuj!</p>
-    */
-
   }, {
     key: "render",
     value: function render() {
-      return _react2.default.createElement(Wrapper, null);
+      return _react2.default.createElement(
+        Wrapper,
+        null,
+        _react2.default.createElement(
+          "div",
+          { className: "welcomeImage" },
+          _react2.default.createElement("img", { src: "https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556" })
+        )
+      );
     }
   }]);
 
