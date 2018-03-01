@@ -26926,7 +26926,7 @@ var Index = function (_Component) {
           rotateRatio: 0.0,
           rotate: 0,
           speed: 0,
-          distance: 0,
+          distance: this.getRandomNumber(0, 100),
           distanceRatio: this.getRandomDoubleFromDigit(1, 9, 10),
           distanceSpeed: 0,
           startX: 0,
@@ -27025,15 +27025,11 @@ var Index = function (_Component) {
             w = distance / 100;
           }
         }
-        if (scrollUp) {
-          x = Math.round(Math.cos(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
-          y = Math.round(Math.sin(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
-        } else {
-          x = Math.round(Math.cos(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
-          y = Math.round(Math.sin(el.angle * Math.PI / 180) * distance + Math.round(window.innerHeight / 2));
-        }
+        /// DODAJ GAZU AREEEEK
+        x = Math.round(Math.cos(el.angle * Math.PI / 180) * distance + Math.round(window.innerWidth / 2));
+        y = Math.round(Math.sin(el.angle * Math.PI / 180) * distance + Math.round(window.innerHeight / 2));
         if ((x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) && !scrollUp) {
-          distance = 0;
+          distance = _this3.getRandomNumber(0, 100);
           angle = _this3.getRandomNumber(-180, 180);
           scaleRatio = _this3.getRandomDoubleFromDigit(1, 9, 10);
           distanceRatio = _this3.getRandomDoubleFromDigit(7, 9, 100);
@@ -27051,10 +27047,14 @@ var Index = function (_Component) {
           }
           startX = x;
           startY = y;
-          distance = Math.hypot(x - window.innerWidth, y - window.innerHeight);
+          var a = window.innerWidth / 2 - x;
+          var b = window.innerHeight / 2 - y;
+          distance = Math.sqrt(a * a + b * b);
           angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0 / Math.PI;
-          console.log(x, y);
+          angle = _this3.getRandomNumber(-180, 180);
+          //  console.log(x,y)
         }
+        if (i === 0) console.log(distance, angle);
         // verticalSpeed
         /*  let scaleDown, w
           w = el.width
