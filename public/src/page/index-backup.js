@@ -39,8 +39,7 @@ const Overlay = styled.div`
       left:0;
       width:10px;
       height:10px;
-      background-color: #fff;
-      border-radius: 50%;
+      background-color: #94C83E;
     }
   }
 `
@@ -53,16 +52,11 @@ const rnd = {
 let lastScrollPosition = 0
 const scrollRatio = {min: 5, max: 12}
 //scale is the same for every element, so use only min value
-const scaleRatio = {min: 1, max: 9}
+const scaleRatio = {min: 0.4, max: 0.2}
 let isScrolling = false
-//vertical
-const speedAcceleration = 0.3
-const speedMax = 9
-const speedBrakingRatio = 0.2
-// horizontal
-const horizontalSpeedRatio = 0.05
-const horizontalSpeedMax = 1
-const horizontalSpeedBrakingRatio = 0.02
+const verticalSpeedRatio = 0.4
+const verticalSpeedMax = 6
+const verticalSpeedBrakingRatio = 0.15
 let scrollTimer = null
 let scrollUp = false
 let content = {
@@ -76,9 +70,7 @@ let scrollPosition = 0
 let currentGlobalScroll = 0
 let isJustScrolled = false
 let isScrollActive = false
-let isStartProcedure = false
-const startProcedureBrakingRatio = 3
-let isMobileDevice = false
+
 class Index extends Component {
   state = {
     backgroundFloatingElements: [],
@@ -89,11 +81,7 @@ class Index extends Component {
     this.handleScroll = this.handleScroll.bind(this)
   }
   componentWillMount(){
-    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-       isMobileDevice = true
-    }
     let list = []
-    let neededElementsList = []
     const browserWidth = window.innerWidth
     const browserHeight = window.innerHeight
     const xElementsCount = Math.round(browserWidth / 26)
@@ -115,26 +103,18 @@ class Index extends Component {
         break
       }
       const opacity = this.getRandomNumber(1,9)
-      const xCenter = Math.round(window.innerWidth / 2)
-      const yCenter = Math.round(window.innerHeight / 2)
       list.push({
-        x:xCenter,
-        y:yCenter,
-        width:1,
-        height: 1,
-        angle: this.getRandomNumber(-180,180),
+        x:nextElementXMargin + overallWidth,
+        y:nextElementYMargin + overallHeight,
+        width:calculatedWidth,
+        height: calculatedWidth,
         opacity: opacity,
         scrollRatio: this.getRandomNumber(scrollRatio.min, scrollRatio.max),
-        scaleRatio: this.getRandomDoubleFromDigit(scaleRatio.min, scaleRatio.max, 100),
+        scaleRatio: this.getRandomDouble(scaleRatio.min, scaleRatio.max),
         scaleDown: false,
         rotateRatio: 0.0,
         rotate: 0,
-        speed: 100,
-        distance: this.getRandomNumber(0,100),
-        distanceRatio: this.getRandomDoubleFromDigit(1,9, 10),
-        distanceSpeed: 0,
-        startX: 0,
-        startY: 0
+        verticalSpeed: 0
       })
       nextElementXMargin = this.getRandomNumber(rnd.xMargin.min, rnd.xMargin.max)
       nextElementYMargin = this.getRandomNumber(rnd.yMargin.min, rnd.yMargin.max)
@@ -147,22 +127,19 @@ class Index extends Component {
   getRandomNumber(min, max){
      return Math.round(Math.random() * (max - min) + min)
   }
-  getRandomDoubleFromDigit(min, max, decimalPlaces){
-     return Math.round(Math.random() * (max - min) + min) / decimalPlaces
-  }
   getRandomDouble(min, max){
      return Math.round(min * 10) / 10
   }
   handleScroll(){
-    currentGlobalScroll = isMobileDevice ? window.pageYOffset : document.documentElement.scrollTop
+    currentGlobalScroll = document.documentElement.scrollTop
     isScrolling = true
     if(scrollTimer !== null) {
         clearTimeout(scrollTimer)
-    } 
+    }
     scrollTimer = setTimeout(function() {
         isScrolling = false
     }, 200)
-    const currentScroll = isMobileDevice ? window.pageYOffset : document.documentElement.scrollTop
+    const currentScroll = document.documentElement.scrollTop
     scrollPosition = currentScroll
     if(currentScroll > lastScrollPosition)
       scrollUp = false
@@ -175,94 +152,20 @@ class Index extends Component {
     let elements = this.state.backgroundFloatingElements
     let list = []
     elements.map((el, i) => {
-      let w = el.width
-      let h = el.height
-      let x = el.x
-      let y = el.y
-      let scaleDown
-      let verticalSpeed
-      let horizontalSpeed
-      let distance = el.distance
-      let angle = el.angle
-      let distanceRatio = el.distanceRatio
-      let scaleRatio = el.scaleRatio
-      let speed = el.speed
-      let distanceSpeed = el.distanceSpeed
-      let startX = el.startX
-      let startY = el.startY
-      if(speed === 100)
-        isStartProcedure = true
-      if(speed < 10)
-        isStartProcedure = false
-      if(isStartProcedure)
-        speed -= startProcedureBrakingRatio
-      if(isScrolling){
-        if(speed <= speedMax){
-          speed += speedAcceleration
-        }
-        if(!scrollUp){
-          distance += speed
-        }else{
-          distance -= speed
-        }
-      }
-      if(!isScrolling && speed > 0){
-        if(speed > 1)
-          speed -= speedBrakingRatio
-        if(!scrollUp){
-          distance += speed
-        }else{
-          distance -= speed
-        }
-      }
-      if(speed < 1)
-        speed = 1
-      if(isScrolling || speed > 0){
-        if(!scrollUp){
-          w = distance / 100
-        }else{
-          w = distance / 100
-        }
-      }
-      /// DODAJ GAZU AREEEEK
-      x = Math.round(Math.cos(el.angle * Math.PI/180) * distance + Math.round(window.innerWidth / 2))
-      y = Math.round(Math.sin(el.angle * Math.PI/180) * distance + Math.round(window.innerHeight / 2))
-      if(((x < 0 || x > window.innerWidth) || (y < 0 || y > window.innerHeight)) && !scrollUp){
-        distance = this.getRandomNumber(0,100)
-        angle = this.getRandomNumber(-180,180)
-        scaleRatio = this.getRandomDoubleFromDigit(1, 9, 10)
-        distanceRatio = this.getRandomDoubleFromDigit(7,9, 100)
-        w = 0
-        h = 0
-      }
-      if(w <= 0 && h <= 0 && scrollUp){
-        let random = this.getRandomNumber(0,1)
-        if(random === 0){
-          x = this.getRandomNumber(0, 1) === 0 ? 0 : window.innerWidth
-          y = this.getRandomNumber(0, window.innerHeight)
-        }else{
-          x = this.getRandomNumber(0, window.innerWidth)
-          y = this.getRandomNumber(0, 1) === 0 ? 0 : window.innerHeight
-        }
-      /*  if(x === window.innerWidth && y <= Math.round(window.innerHeight / 2))
-          angle = this.getRandomNumber(-90, 0)
-        if(x === window.innerWidth && y >= Math.round(window.innerHeight / 2))
-          angle = this.getRandomNumber(0, 90)
-        if(y === window.innerHeight && x <= Math.round(window.innerWidth / 2))
-          angle = this.getRandomNumber(90, -180)
-        if(y === window.innerWidth && x >= Math.round(window.innerWidth / 2))
-          angle = this.getRandomNumber(-180, 0)*/
-        startX = x
-        startY = y
-        let a = (window.innerWidth / 2) - x
-        let b = (window.innerHeight / 2) - y
-        distance = Math.sqrt(a*a + b*b)
-        //angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0/Math.PI
-        angle = this.getRandomNumber(-180, 180)
-      }
-      // verticalSpeed
-    /*  let scaleDown, w
+      let scaleDown, w
       w = el.width
+      scaleDown = el.scaleDown
+      if(el.width >= rnd.width.max && !el.scaleDown){
+        scaleDown = true
+      }
+      if(el.width <= rnd.width.min && el.scaleDown){
+        scaleDown = false
+      }
+      if(scaleDown){
+        w -= el.scaleRatio
+      }else{
+        w += el.scaleRatio
+      }
       let verticalSpeed = el.verticalSpeed
       let y = el.y
       if(isScrolling){
@@ -296,29 +199,18 @@ class Index extends Component {
       }
       if(verticalSpeed < 0)
         verticalSpeed = 0
-      // horizontal speed
-      let horizontalSpeed = el.horizontalSpeed
-      let x = el.x
-      const halfScreenPerimeter = Math.round(window.innerWidth / 2)
-      */
       list.push({
         width: w,
         height:w,
-        x: x,
+        x: el.x,
         y: y,
         opacity: el.opacity,
         scrollRatio: el.scrollRatio,
-        scaleRatio: scaleRatio,
+        scaleRatio: el.scaleRatio,
         scaleDown: scaleDown,
         rotateRatio: el.rotateRatio,
         rotate: el.rotate + el.rotateRatio,
-        speed: speed,
-        distance: distance,
-        angle: angle,
-        distanceRatio: distanceRatio,
-        distanceSpeed: distanceSpeed,
-        startX: startX,
-        startY: startY
+        verticalSpeed: verticalSpeed
       })
     })
     // content units

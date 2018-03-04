@@ -26798,7 +26798,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _templateObject = _taggedTemplateLiteral(["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  .pusher{\n    width:10px;\n    height:20000px;\n  }\n  h1{\n    color:#94C83E;\n    font-size: 22px;\n  }\n  .content{\n    position:relative;\n    z-index: 9;\n\n  }\n"], ["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  .pusher{\n    width:10px;\n    height:20000px;\n  }\n  h1{\n    color:#94C83E;\n    font-size: 22px;\n  }\n  .content{\n    position:relative;\n    z-index: 9;\n\n  }\n"]),
-    _templateObject2 = _taggedTemplateLiteral(["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #94C83E;\n      border-radius: 50%;\n    }\n  }\n"], ["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #94C83E;\n      border-radius: 50%;\n    }\n  }\n"]);
+    _templateObject2 = _taggedTemplateLiteral(["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #fff;\n      border-radius: 50%;\n    }\n  }\n"], ["\n  background-color:#000;\n  width:100%;\n  height:100vh;\n  position:fixed;\n  top:0;\n  left:0;\n  z-index:1;\n  .floatingElements{\n    z-index: 1;\n    .element{\n      position:fixed;\n      top:0;\n      left:0;\n      width:10px;\n      height:10px;\n      background-color: #fff;\n      border-radius: 50%;\n    }\n  }\n"]);
 
 var _react = __webpack_require__(1);
 
@@ -26867,6 +26867,7 @@ var isJustScrolled = false;
 var isScrollActive = false;
 var isStartProcedure = false;
 var startProcedureBrakingRatio = 3;
+var isMobileDevice = false;
 
 var Index = function (_Component) {
   _inherits(Index, _Component);
@@ -26890,6 +26891,9 @@ var Index = function (_Component) {
     value: function componentWillMount() {
       var _this2 = this;
 
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        isMobileDevice = true;
+      }
       var list = [];
       var neededElementsList = [];
       var browserWidth = window.innerWidth;
@@ -26964,7 +26968,7 @@ var Index = function (_Component) {
   }, {
     key: "handleScroll",
     value: function handleScroll() {
-      currentGlobalScroll = document.documentElement.scrollTop;
+      currentGlobalScroll = isMobileDevice ? window.pageYOffset : document.documentElement.scrollTop;
       isScrolling = true;
       if (scrollTimer !== null) {
         clearTimeout(scrollTimer);
@@ -26972,7 +26976,7 @@ var Index = function (_Component) {
       scrollTimer = setTimeout(function () {
         isScrolling = false;
       }, 200);
-      var currentScroll = document.documentElement.scrollTop;
+      var currentScroll = isMobileDevice ? window.pageYOffset : document.documentElement.scrollTop;
       scrollPosition = currentScroll;
       if (currentScroll > lastScrollPosition) scrollUp = false;else scrollUp = true;
       lastScrollPosition = currentScroll;
@@ -28977,7 +28981,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _templateObject = _taggedTemplateLiteral(["\n  margin-bottom:80000px;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    background-color: rgba(0,0,0,1);\n    position:fixed;\n    padding:40px;\n    z-index: 11;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"], ["\n  margin-bottom:80000px;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    background-color: rgba(0,0,0,1);\n    position:fixed;\n    padding:40px;\n    z-index: 11;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n"]);
+var _templateObject = _taggedTemplateLiteral(["\n  margin-bottom:80000px;\n  color:#94C83E;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    background-color: rgba(0,0,0,0);\n    position:fixed;\n    padding:40px;\n    z-index: 11;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n  span{\n    display: block;\n    width:100%;\n    text-align:center;\n    margin-top:60px;\n    &.releaseDate{\n      font-size:30px;\n    }\n    &.preOrderInfo{\n      margin-top:30px;\n      font-size:24px;\n    }\n  }\n\n"], ["\n  margin-bottom:80000px;\n  color:#94C83E;\n  .welcomeImage{\n    margin: 0 auto;\n    display: table;\n    background-color: rgba(0,0,0,0);\n    position:fixed;\n    padding:40px;\n    z-index: 11;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    .blur{\n      width:100%;\n      height:100%;\n      filter: blur(20px);\n      position:absolute;\n      top:0;\n      left:0;\n      z-index:10;\n    }\n  }\n  p{\n    max-width: 80%;\n    color:#94C83E;\n    text-align: center;\n    margin:0 auto;\n    display: table;\n    margin-top:1000px;\n    margin-bottom: 3000px;\n  }\n  span{\n    display: block;\n    width:100%;\n    text-align:center;\n    margin-top:60px;\n    &.releaseDate{\n      font-size:30px;\n    }\n    &.preOrderInfo{\n      margin-top:30px;\n      font-size:24px;\n    }\n  }\n\n"]);
 
 var _react = __webpack_require__(1);
 
@@ -29053,7 +29057,17 @@ var WelcomeUnit = function (_Component) {
         _react2.default.createElement(
           "div",
           { className: "welcomeImage" },
-          _react2.default.createElement("img", { src: "https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556" })
+          _react2.default.createElement("img", { src: "https://vignette.wikia.nocookie.net/ichc-channel/images/6/68/Xbox_Original_logo.png/revision/latest/scale-to-width-down/640?cb=20160410200556" }),
+          _react2.default.createElement(
+            "span",
+            { className: "releaseDate" },
+            "Available on 21.11.2001"
+          ),
+          _react2.default.createElement(
+            "span",
+            { className: "preOrderInfo" },
+            "Pre order now"
+          )
         )
       );
     }
