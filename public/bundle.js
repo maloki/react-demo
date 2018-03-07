@@ -26840,9 +26840,8 @@ var rnd = {
   width: { min: 7, max: 20 }
 };
 var lastScrollPosition = 0;
-var scrollRatio = { min: 5, max: 12
-  //scale is the same for every element, so use only min value
-};var scaleRatio = { min: 1, max: 9 };
+var scrollRatio = { min: 5, max: 12 };
+var scaleRatio = { min: 1, max: 2 };
 var isScrolling = false;
 //vertical
 var speedAcceleration = 0.3;
@@ -26868,6 +26867,7 @@ var isScrollActive = false;
 var isStartProcedure = false;
 var startProcedureBrakingRatio = 3;
 var isMobileDevice = false;
+var backgroundColors = ["#7D6CDC", "#A6A197", "#fff", "#3D4D4F", "#1810CD", "#1267DB"];
 
 var Index = function (_Component) {
   _inherits(Index, _Component);
@@ -26936,7 +26936,8 @@ var Index = function (_Component) {
           distanceRatio: this.getRandomDoubleFromDigit(1, 9, 10),
           distanceSpeed: 0,
           startX: 0,
-          startY: 0
+          startY: 0,
+          color: backgroundColors[this.getRandomNumber(0, backgroundColors.length - 1)]
         });
         nextElementXMargin = this.getRandomNumber(rnd.xMargin.min, rnd.xMargin.max);
         nextElementYMargin = this.getRandomNumber(rnd.yMargin.min, rnd.yMargin.max);
@@ -27005,6 +27006,7 @@ var Index = function (_Component) {
         var distanceSpeed = el.distanceSpeed;
         var startX = el.startX;
         var startY = el.startY;
+        var color = el.color;
         if (speed === 100) isStartProcedure = true;
         if (speed < 10) isStartProcedure = false;
         if (isStartProcedure) speed -= startProcedureBrakingRatio;
@@ -27029,9 +27031,9 @@ var Index = function (_Component) {
         if (speed < 1) speed = 1;
         if (isScrolling || speed > 0) {
           if (!scrollUp) {
-            w = distance / 100;
+            w = distance / 200;
           } else {
-            w = distance / 100;
+            w = distance / 200;
           }
         }
         /// DODAJ GAZU AREEEEK
@@ -27042,6 +27044,7 @@ var Index = function (_Component) {
           angle = _this3.getRandomNumber(-180, 180);
           scaleRatio = _this3.getRandomDoubleFromDigit(1, 9, 10);
           distanceRatio = _this3.getRandomDoubleFromDigit(7, 9, 100);
+          color = backgroundColors[_this3.getRandomNumber(0, backgroundColors.length - 1)];
           w = 0;
           h = 0;
         }
@@ -27069,6 +27072,7 @@ var Index = function (_Component) {
           distance = Math.sqrt(a * a + b * b);
           //angle = Math.atan2(x - Math.round(window.innerWidth / 2), y - Math.round(window.innerHeight / 2)) * 180.0/Math.PI
           angle = _this3.getRandomNumber(-180, 180);
+          color = backgroundColors[_this3.getRandomNumber(0, backgroundColors.length - 1)];
         }
         // verticalSpeed
         /*  let scaleDown, w
@@ -27128,7 +27132,8 @@ var Index = function (_Component) {
           distanceRatio: distanceRatio,
           distanceSpeed: distanceSpeed,
           startX: startX,
-          startY: startY
+          startY: startY,
+          color: color
         });
       });
       // content units
@@ -27183,10 +27188,11 @@ var Index = function (_Component) {
                 style: {
                   top: el.y + "px",
                   left: el.x + "px",
-                  width: el.width,
-                  height: el.height,
+                  width: el.width < 1 ? 1 : el.width,
+                  height: el.height < 1 ? 1 : el.height,
                   opacity: "0." + el.opacity,
-                  transform: "rotate(" + el.rotate + "deg)"
+                  transform: "rotate(" + el.rotate + "deg)",
+                  backgroundColor: el.color
                 } });
             })
           )
